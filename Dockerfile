@@ -1,15 +1,17 @@
-FROM node:argon
+FROM node:lts-alpine
 MAINTAINER Michael Nilsen
 
 RUN set -e
-RUN apt-get update && apt-get -y upgrade
+RUN apk update && apk upgrade
+RUN apk add bash
+RUN apk add git
 
-RUN useradd --user-group --create-home --shell /bin/false app
+RUN addgroup -S app && adduser -S -G app app
 ENV HOME=/home/app
 
-RUN npm install -g npm
+#RUN npm install -g npm
 RUN npm install -g n forever
-RUN n lts
+#RUN n lts
 
 RUN mkdir $HOME/MTA_Subway_SIRI_Server
 COPY package.json $HOME/MTA_Subway_SIRI_Server
@@ -23,5 +25,4 @@ RUN chown -R app:app $HOME/*
 RUN ./bin/updateGTFSData.js
 
 EXPOSE 16181
-
 CMD ["node","siri_server.js"]
